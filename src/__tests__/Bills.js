@@ -3,7 +3,9 @@
  */
 
 import { screen, waitFor } from "@testing-library/dom";
+import userEvent from "@testing-library/user-event";
 import BillsUI from "../views/BillsUI.js";
+import Bill from "../containers/Bills";
 import mockStore from "../__mocks__/store";
 import { bills } from "../fixtures/bills.js";
 import { ROUTES_PATH } from "../constants/routes.js";
@@ -122,4 +124,25 @@ describe("Given I am a user connected as Admin", () => {
 	});
 });
 
+// test modal
+describe("Given I am a user connected as an employee", () => {
+	describe("When I navigate to Bills, and I click on an icon-eye button", () => {
+		test("Then handleClickIconEye should be called", async () => {
+			document.body.innerHTML = BillsUI({data: bills});
+			await waitFor(() => screen.getByText("Mes notes de frais"));
+			const eyeIcon = screen.getAllByTestId("icon-eye")[0];
+			expect(screen.getByText("Justificatif")).toBeTruthy();
+			const bill = new Bill({
+				document,
+				onNavigate: window.onNavigate,
+				store: mockStore,
+				localStorage: document.localStorage,
+			});
 
+			const handleClick = jest.fn(bill.handleClickIconEye(eyeIcon));
+			eyeIcon.addEventListener("click", handleClick);
+			userEvent.click(eyeIcon);
+			expect(handleClick).toHaveBeenCalled();
+		});
+	});
+});
