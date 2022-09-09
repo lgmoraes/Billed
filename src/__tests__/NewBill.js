@@ -33,10 +33,10 @@ describe("Given I am connected as an employee", () => {
 		});
 	});
 	// test d'intégration POST
-	describe("When I post a new bill", () => {
-		test("Submit", () => {
+	describe("When I import a file in new bill formular", () => {
+		test("Then the input file should contain the exact same file", () => {
 			document.body.innerHTML = NewBillUI()
-			const newBill = new NewBill({ document, onNavigate, store: mockStore, localStorage })
+			new NewBill({ document, onNavigate, store: mockStore, localStorage })
 
 			const file = new File(["dummy content"], "Test file");
 			const inputFile = screen.getByTestId("file");
@@ -44,9 +44,18 @@ describe("Given I am connected as an employee", () => {
 	
 			expect(inputFile.files).toHaveLength(1);
 			expect(inputFile.files[0]).toStrictEqual(file);
+		});
+	})
+	describe("When I post a new bill", () => {
+		test("Then handleSubmit should have been called", () => {
+			document.body.innerHTML = NewBillUI()
+			const newBill = new NewBill({ document, onNavigate, store: mockStore, localStorage })
+
+			const file = new File(["dummy content"], "Test file");
+			const inputFile = screen.getByTestId("file");
+			userEvent.upload(inputFile, file);
 
 			// On écrit dans les inputs
-
 			const form = screen.getByTestId('form-new-bill')
 			const handleSubmit = jest.fn(newBill.handleSubmit)
 
